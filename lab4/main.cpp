@@ -1,14 +1,15 @@
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 
 #include "include/Triangle.hpp"
 #include "include/Hexagon.hpp"
 #include "include/Octagon.hpp"
-#include "include/FigureList.hpp"
+#include "include/FigureArray.hpp"
 
 int main() {
 
-    /*
+    /* Testing figure creation from input
     Triangle t0;
     std::cin >> t0;
     Point p0 = t0.geom_center();
@@ -17,38 +18,42 @@ int main() {
     std::cout << t0.area() << std::endl << std::endl;
     */
 
-    Triangle t1(Point(1, sqrt(3)), Point(2, 0), Point(0, 0));
-    Point p1 = t1.geom_center();
+    std::cout << std::setprecision(20);
+    Triangle<double> t1(Point<double>(1, sqrt(3)),
+                        Point<double>(2, 0),
+                        Point<double>(0, 0));
+    Point<double> p1 = t1.geom_center();
     std::cout << t1 << std::endl;
     std::cout << p1 << std::endl;
     std::cout << t1.area() << std::endl << std::endl;
 
-    Triangle t2(2);
+    Triangle<double> t2(2);
     Point p2 = t2.geom_center();
     std::cout << t2 << std::endl;
     std::cout << p2 << std::endl;
     std::cout << t2.area() << std::endl << std::endl;
 
-    Hexagon h1(3);
+    Hexagon<double> h1(3);
     Point p3 = h1.geom_center();
     std::cout << h1 << std::endl;
     std::cout << p3 << std::endl;
     std::cout << h1.area() << std::endl << std::endl;
 
-    Octagon o1(4);
+
+    Octagon<double> o1(4);
     Point p4 = o1.geom_center();
     std::cout << o1 << std::endl;
     std::cout << p4 << std::endl;
     std::cout << o1.area() << std::endl << std::endl;
 
-    FigureList fl{};
-    fl.push_back(&t1);
-    fl.push_back(&t2);
-    fl.push_back(&h1);
-    fl.push_back(&o1);
+    /*
+    FigureArray<double> fa{};
+    std::cin >> fa;
 
-    fl.print_geom_center();
-    std::cout << fl.total_area() << std::endl;
+    // fa.erase(0);
+    std::cout << fa.total_area() << std::endl;
+    */
+
 
     return 0;
 }

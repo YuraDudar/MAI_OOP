@@ -3,6 +3,7 @@
 
 #include "Point.hpp"
 
+template<typename T>
 class Figure {
 protected:
     Figure() = default;
@@ -10,8 +11,8 @@ protected:
 public:
     virtual ~Figure() = default;
 
-    virtual Point geom_center() const {};
-    virtual double area() const = 0;
+    virtual Point<T> geom_center() const = 0;
+    virtual T area() const = 0;
     virtual operator double() const = 0;
 
 };

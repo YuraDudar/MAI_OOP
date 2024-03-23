@@ -1,11 +1,11 @@
 #include <iostream>
 #include <cmath>
 #include <cfloat>
-#include <vector>
 #include "../include/Hexagon.hpp"
 
-Hexagon::Hexagon(const Point &p1, const Point &p2, const Point &p3,
-                 const Point &p4, const Point &p5, const Point &p6) : p1(p1), p2(p2), p3(p3), p4(p4), p5(p5), p6(p6) {
+template<typename T>
+Hexagon<T>::Hexagon(const Point<T> &p1, const Point<T> &p2, const Point<T> &p3,
+                 const Point<T> &p4, const Point<T> &p5, const Point<T> &p6) : p1(p1), p2(p2), p3(p3), p4(p4), p5(p5), p6(p6) {
     side = p1.dist(p2);
     bool c1 = fabs(p2.dist(p3) - side) > FLT_EPSILON;
     bool c2 = fabs(p3.dist(p4) - side) > FLT_EPSILON;
@@ -17,20 +17,22 @@ Hexagon::Hexagon(const Point &p1, const Point &p2, const Point &p3,
     }
 }
 
-Hexagon::Hexagon(double side) : side(side) {
+template<typename T>
+Hexagon<T>::Hexagon(T side) : side(side) {
     if (side <= 0) {
         throw std::logic_error("Side must be a positive number");
     }
-    double R = side;
-    p1 = Point(R * std::cos(1 * 2 * M_PI / 6), R * std::sin(1 * 2 * M_PI / 6));
-    p2 = Point(R * std::cos(2 * 2 * M_PI / 6), R * std::sin(2 * 2 * M_PI / 6));
-    p3 = Point(R * std::cos(3 * 2 * M_PI / 6), R * std::sin(3 * 2 * M_PI / 6));
-    p4 = Point(R * std::cos(4 * 2 * M_PI / 6), R * std::sin(4 * 2 * M_PI / 6));
-    p5 = Point(R * std::cos(5 * 2 * M_PI / 6), R * std::sin(5 * 2 * M_PI / 6));
-    p6 = Point(R * std::cos(6 * 2 * M_PI / 6), R * std::sin(6 * 2 * M_PI / 6));
+    T R = side;
+    p1 = Point<T>(R * std::cos(1 * 2 * M_PI / 6), R * std::sin(1 * 2 * M_PI / 6));
+    p2 = Point<T>(R * std::cos(2 * 2 * M_PI / 6), R * std::sin(2 * 2 * M_PI / 6));
+    p3 = Point<T>(R * std::cos(3 * 2 * M_PI / 6), R * std::sin(3 * 2 * M_PI / 6));
+    p4 = Point<T>(R * std::cos(4 * 2 * M_PI / 6), R * std::sin(4 * 2 * M_PI / 6));
+    p5 = Point<T>(R * std::cos(5 * 2 * M_PI / 6), R * std::sin(5 * 2 * M_PI / 6));
+    p6 = Point<T>(R * std::cos(6 * 2 * M_PI / 6), R * std::sin(6 * 2 * M_PI / 6));
 }
 
-Hexagon::Hexagon(const Hexagon &other) {
+template<typename T>
+Hexagon<T>::Hexagon(const Hexagon<T> &other) {
     p1 = other.p1;
     p2 = other.p2;
     p3 = other.p3;
@@ -40,7 +42,8 @@ Hexagon::Hexagon(const Hexagon &other) {
     side = other.side;
 }
 
-Hexagon::Hexagon(Hexagon &&other) noexcept {
+template<typename T>
+Hexagon<T>::Hexagon(Hexagon<T> &&other) noexcept {
     p1 = std::move(other.p1);
     p2 = std::move(other.p2);
     p3 = std::move(other.p3);
@@ -50,7 +53,8 @@ Hexagon::Hexagon(Hexagon &&other) noexcept {
     side = std::move(other.side);
 }
 
-Hexagon &Hexagon::operator=(const Hexagon &other) {
+template<typename T>
+Hexagon<T> &Hexagon<T>::operator=(const Hexagon<T> &other) {
     if (this != &other) {
         p1 = other.p1;
         p2 = other.p2;
@@ -64,7 +68,8 @@ Hexagon &Hexagon::operator=(const Hexagon &other) {
     return *this;
 }
 
-Hexagon &Hexagon::operator=(Hexagon &&other) noexcept {
+template<typename T>
+Hexagon<T> &Hexagon<T>::operator=(Hexagon<T> &&other) noexcept {
     p1 = std::move(other.p1);
     p2 = std::move(other.p2);
     p3 = std::move(other.p3);
@@ -76,47 +81,39 @@ Hexagon &Hexagon::operator=(Hexagon &&other) noexcept {
     return *this;
 }
 
-bool Hexagon::operator==(const Hexagon &other) {
-    std::vector<Point> pts = {p1, p2, p3, p4, p5, p6, p1, p2, p3, p4, p5, p6};
-    std::vector<Point> opts = {other.p1, other.p2, other.p3, other.p4, other.p5, other.p6};
-    bool flag = false;
-    for (size_t i = 0; i < 6; ++i) {
-        bool curr_flag = true;
-        for (size_t j = i; j < i + 6; ++j) {
-            if (!(pts[j] == opts[j-i])) {
-                curr_flag = false;
-            }
-        }
-        if (curr_flag) {
-            flag = true;
-            break;
-        }
-    }
-    return flag;
+template<typename T>
+bool Hexagon<T>::operator==(const Hexagon<T> &other) {
+    return (p1 == other.p1 && p2 == other.p2 && p3 == other.p3 &&
+            p4 == other.p4 && p5 == other.p5 && p6 == other.p6);
 }
 
-std::istream &operator>>(std::istream &in, Hexagon &a) {
-    Point p1, p2, p3, p4, p5, p6;
+template<typename U>
+std::istream &operator>>(std::istream &in, Hexagon<U> &a) {
+    Point<U> p1, p2, p3, p4, p5, p6;
     in >> p1 >> p2 >> p3 >> p4 >> p5 >> p6;
-    a = Hexagon(p1, p2, p3, p4, p5, p6);
+    a = Hexagon<U>(p1, p2, p3, p4, p5, p6);
 
     return in;
 }
 
-std::ostream &operator<<(std::ostream &out, Hexagon &a) {
+template<typename U>
+std::ostream &operator<<(std::ostream &out, Hexagon<U> &a) {
     out << a.p1 << " " << a.p2 << " " << a.p3 << " " << a.p4 << " " << a.p5 << " " << a.p6;
     return out;
 }
 
-Point Hexagon::geom_center() const {
+template<typename T>
+Point<T> Hexagon<T>::geom_center() const {
     return {(p1.get_x() + p2.get_x() + p3.get_x() + p4.get_x() + p5.get_x() + p6.get_x()) / 6,
             (p1.get_y() + p2.get_y() + p3.get_y() + p4.get_y() + p5.get_y() + p6.get_y()) / 6};
 }
 
-double Hexagon::area() const {
+template<typename T>
+T Hexagon<T>::area() const {
     return (side * side * 3 * sqrt(3)) / 2;
 }
 
-Hexagon::operator double() const {
+template<typename T>
+Hexagon<T>::operator double() const {
     return (side * side * 3 * sqrt(3)) / 2;
 }
