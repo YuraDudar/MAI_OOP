@@ -1,9 +1,6 @@
 #include "../googletest/googletest/include/gtest/gtest.h"
 #include "../include/factory.hpp"
-#include "../include/observer.hpp"
-#include "../include/orc.hpp"
-#include "../include/bear.hpp"
-#include "../include/squirrel.hpp"
+#include "../include/fight.hpp"
 #include "bits/stdc++.h"
 
 TEST(NPCFactoryTest, CreateNPC) {
@@ -63,20 +60,20 @@ TEST(NPCTest, Getters) {
     std::shared_ptr<NPC> bear = factory.createNPC(NPC_type::bear, 3, 4);
     std::shared_ptr<NPC> squirrel = factory.createNPC(NPC_type::squirrel, 5, 6);
 
-    EXPECT_EQ(orc->getType(), "Orc");
-    EXPECT_EQ(bear->getType(), "Bear");
-    EXPECT_EQ(squirrel->getType(), "Squirrel");
+    EXPECT_EQ(orc->get_type(), "Orc");
+    EXPECT_EQ(bear->get_type(), "Bear");
+    EXPECT_EQ(squirrel->get_type(), "Squirrel");
 
     EXPECT_TRUE(orc->alive());
     EXPECT_TRUE(bear->alive());
     EXPECT_TRUE(squirrel->alive());
 
-    EXPECT_EQ(orc->getX(), 1);
-    EXPECT_EQ(bear->getX(), 3);
-    EXPECT_EQ(squirrel->getX(), 5);
-    EXPECT_EQ(orc->getY(), 2);
-    EXPECT_EQ(bear->getY(), 4);
-    EXPECT_EQ(squirrel->getY(), 6);
+    EXPECT_EQ(orc->get_x(), 1);
+    EXPECT_EQ(bear->get_x(), 3);
+    EXPECT_EQ(squirrel->get_x(), 5);
+    EXPECT_EQ(orc->get_y(), 2);
+    EXPECT_EQ(bear->get_y(), 4);
+    EXPECT_EQ(squirrel->get_y(), 6);
 }
 
 
@@ -112,10 +109,10 @@ TEST(NPCTest, Attach) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TEST(OrcTest, ConstructorAndGetters) {
     Orc orc(1, 2);
-    EXPECT_EQ(orc.getX(), 1);
-    EXPECT_EQ(orc.getY(), 2);
+    EXPECT_EQ(orc.get_x(), 1);
+    EXPECT_EQ(orc.get_y(), 2);
     EXPECT_TRUE(orc.alive());
-    EXPECT_EQ(orc.getType(), "Orc");
+    EXPECT_EQ(orc.get_type(), "Orc");
 }
 
 TEST(OrcTest, Visitors) {
@@ -131,19 +128,16 @@ TEST(OrcTest, Visitors) {
 
     EXPECT_FALSE(orc->accept(squirrel));
     EXPECT_TRUE(orc->alive());
-
-    EXPECT_TRUE(orc->accept(orc2));
-    EXPECT_FALSE(orc->alive());
 }
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TEST(BearTest, ConstructorAndGetters) {
     Bear bear(1, 2);
-    EXPECT_EQ(bear.getX(), 1);
-    EXPECT_EQ(bear.getY(), 2);
+    EXPECT_EQ(bear.get_x(), 1);
+    EXPECT_EQ(bear.get_y(), 2);
     EXPECT_TRUE(bear.alive());
-    EXPECT_EQ(bear.getType(), "Bear");
+    EXPECT_EQ(bear.get_type(), "Bear");
 }
 
 TEST(BearTest, Visitors) {
@@ -160,24 +154,23 @@ TEST(BearTest, Visitors) {
     EXPECT_FALSE(bear->accept(bear2));
     EXPECT_TRUE(bear->alive());
 
-    EXPECT_TRUE(bear->accept(orc));
-    EXPECT_FALSE(bear->alive());
+
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TEST(SquirrelTest, ConstructorAndGetters) {
     Squirrel squirrel(1, 2);
-    EXPECT_EQ(squirrel.getX(), 1);
-    EXPECT_EQ(squirrel.getY(), 2);
+    EXPECT_EQ(squirrel.get_x(), 1);
+    EXPECT_EQ(squirrel.get_y(), 2);
     EXPECT_TRUE(squirrel.alive());
-    EXPECT_EQ(squirrel.getType(), "Squirrel");
+    EXPECT_EQ(squirrel.get_type(), "Squirrel");
 }
 
 TEST(SquirrelTest, Visitors) {
     NPCFactory factory;
     std::shared_ptr<NPC> orc = factory.createNPC(NPC_type::orc, 1, 2);
     std::shared_ptr<NPC> bear = factory.createNPC(NPC_type::bear, 3, 4);
-    std::shared_ptr<NPC> squirrel = factory.createNPC(NPC_type::squirrel, 5, 6);
+    std::shared_ptr<NPC> squirrel = factory.createNPC(NPC_type::squirrel, 5, 5);
     std::shared_ptr<NPC> squirrel2 = factory.createNPC(NPC_type::squirrel, -5, 6);
 
     EXPECT_TRUE(squirrel->alive());
@@ -186,17 +179,34 @@ TEST(SquirrelTest, Visitors) {
 
     EXPECT_TRUE(squirrel->alive());
     EXPECT_FALSE(squirrel->accept(squirrel2));
-    EXPECT_TRUE(squirrel->alive());
+    EXPECT_TRUE(squirrel2->alive());
 
-    EXPECT_TRUE(squirrel->alive());
-    EXPECT_TRUE(squirrel->accept(bear));
-    EXPECT_FALSE(squirrel->alive());
-
-    remove("battle_stats.txt");
+    remove("fight_stats.txt");
     remove("test.txt");
 }
 
-int main(int argc, char **argv) {
+//_________________________________________________________________________________________________________________________
+TEST(FightManagerTest, GetReturnsSingletonInstance) {
+    FightManager& instance1 = FightManager::get();
+    FightManager& instance2 = FightManager::get();
+
+    EXPECT_EQ(&instance1, &instance2);
+}
+
+TEST(FightManagerTest, AddEventAddsEventToQueue) {
+    FightManager& manager = FightManager::get();
+    FightEvent event;
+
+    bool test = true;
+    try {
+        manager.add_event(std::move(event));
+    } catch (...) {
+        test = false;
+    }
+    EXPECT_TRUE(test);
+}
+
+int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

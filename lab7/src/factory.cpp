@@ -20,20 +20,20 @@ std::shared_ptr<NPC> NPCFactory::createNPC(NPC_type type, int x, int y) {
     return res;
 }
 
-void NPCFactory::save(const set_t &s, const std::string &file_name) {
+void NPCFactory::save(const set_t& s, const std::string& file_name) {
     std::ofstream out(file_name);
     out << s.size() << std::endl;
-    for (auto &npc: s) {
-        out << npc->getType() << std::endl
-            << npc->getX() << std::endl
-            << npc->getY() << std::endl;
+    for (auto& npc : s) {
+        out << npc->get_type() << std::endl
+            << npc->get_x() << std::endl
+            << npc->get_y() << std::endl;
     }
 
     out.flush();
     out.close();
 }
 
-set_t NPCFactory::load(const std::string &file_name) {
+set_t NPCFactory::load(const std::string& file_name) {
     set_t res;
     std::ifstream in(file_name);
     std::shared_ptr<Observer> console_observer, file_observer;

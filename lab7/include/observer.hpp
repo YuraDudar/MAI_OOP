@@ -2,18 +2,19 @@
 
 #include <fstream>
 #include <memory>
+#include <shared_mutex>
 
 #include "orc.hpp"
 #include "bear.hpp"
 #include "squirrel.hpp"
-#include "npc.hpp"
-#include "squirrel.hpp"
+
+extern std::mutex print_mutex, file_mutex;
 
 class ConsoleObserver : public Observer {
 public:
     ConsoleObserver() = default;
 
-    void report_killed(const NPC& attacker, const NPC& defender) override;
+    void report_killed(const std::shared_ptr<NPC> attacker, const std::shared_ptr<NPC> defender) override;
 };
 
 class FileObserver : public Observer {
@@ -22,5 +23,5 @@ class FileObserver : public Observer {
 public:
     FileObserver() : os(std::ofstream("fight_stats.txt")) {}
 
-    void report_killed(const NPC& attacker, const NPC& defender) override;
+    void report_killed(const std::shared_ptr<NPC> attacker, const std::shared_ptr<NPC> defender) override;
 };
